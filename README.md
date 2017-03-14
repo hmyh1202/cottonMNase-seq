@@ -7,6 +7,8 @@
 Short-read data will be deposited in the NCBI short read archive ([SRP??????](http://trace.ddbj.nig.ac.jp/DRASearch/study?acc=SRP??????)), also as Biobroject [PRJNA??????](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA??????).
 
 #### Access to fastq files
+Paired-end reads of 16 samples: 4 species (A2, D5, A2xD5, Maxxa) X 2 digestive conditions (Heavy and Light) X 2 technical reps.
+
     cd cottonLeaf/rawfastq
     ln -s ~/jfw-lab-new/RawData/HGJ_leafMNase-seq/WTNHHW163125/data_release/raw_data/*gz .
 
@@ -24,7 +26,7 @@ We usually use [Sickle](https://github.com/najoshi/sickle) to trim off sequences
 
     module load python 
     # python needed for Cutadapt
-    trim_galore_v0.4.2/trim_galore --paired -o trimmed/ fastq/SRR2542701_1.fastq fastq/SRR2542701_2.fastq
+    trim_galore_v0.4.2/trim_galore --paired -o trimmed/ rawfastq/M1H_1.fq.gz rawfastq/M1H_2.fq.gz
     # check results
     grep 'Total reads processed' trimmed/*report.txt >trimmed/summary.txt
     grep 'Reads with adapters' trimmed/*report.txt >>trimmed/summary.txt
