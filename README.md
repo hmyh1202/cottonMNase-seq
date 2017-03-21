@@ -15,11 +15,11 @@ Paired-end reads of 16 samples: 4 species (A2, D5, A2xD5, Maxxa) X 2 digestive c
 #### Checking read quality with [FastQC](http://www.bioinformatics.bbsrc.ac.uk/projects/fastqc/)
     cd ..
     module load fastqc/0.11.3
-    fastqc rawfastq/*     ####bookmark
+    fastqc rawfastq/*
     # move result files to QCreport folder
     mkdir QCreport
-    mv fastq/*zip QCreport/
-    mv fastq/*html QCreport/
+    mv rawfastq/*zip QCreport/
+    mv rawfastq/*html QCreport/
     
 #### Quality trimming and adaptor removal
 We usually use [Sickle](https://github.com/najoshi/sickle) to trim off sequences below quality threshold, and another popular tool is  [Fastx toolkit](http://hannonlab.cshl.edu/fastx_toolkit/). One more alternative to remove adpaters or primers is [cutadapt](https://cutadapt.readthedocs.io/). Based FastQC results above, illumina universal adaptor removal is necessay, and [Trim Galore](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) appears to be a really nice wrapper tool of FastQC and Cutadapt, quite easy to use! 
@@ -27,6 +27,7 @@ We usually use [Sickle](https://github.com/najoshi/sickle) to trim off sequences
     module load python 
     # python needed for Cutadapt
     trim_galore_v0.4.2/trim_galore --paired -o trimmed/ rawfastq/M1H_1.fq.gz rawfastq/M1H_2.fq.gz
+       ####bookmark
     # check results
     grep 'Total reads processed' trimmed/*report.txt >trimmed/summary.txt
     grep 'Reads with adapters' trimmed/*report.txt >>trimmed/summary.txt
