@@ -10,7 +10,7 @@ Short-read data will be deposited in the NCBI short read archive ([SRP??????](ht
 Paired-end reads of 16 samples: 4 species (A2, D5, A2xD5, Maxxa) X 2 digestive conditions (Heavy and Light) X 2 technical reps.
 
     cd cottonLeaf/rawfastq
-    ln -s ~/jfw-lab-new/RawData/HGJ_leafMNase-seq/WTNHHW163125/data_release/raw_data/*gz .
+    ln -s ~/jfw-lab/RawData/HGJ_leafMNase-seq/WTNHHW163125/data_release/raw_data/*gz .
 
 #### Checking read quality with [FastQC](http://www.bioinformatics.bbsrc.ac.uk/projects/fastqc/)
     cd ..
@@ -32,6 +32,7 @@ We usually use [Sickle](https://github.com/najoshi/sickle) to trim off sequences
     grep 'Total reads processed' trimmed/*report.txt >trimmed/summary.txt
     grep 'Reads with adapters' trimmed/*report.txt >>trimmed/summary.txt
     grep 'Total written' trimmed/*report.txt >>trimmed/summary.txt
+    grep 'Number of sequence pairs' trimmed/*report.txt >>trimmed/summary.txt
 
 ### Maize B73 reference genome
 Although (Rodgers-Melnick et al. PNAS 2016) used maize B73 AGPv3 genome assembly, the current version is AGPv4 as describer [here](http://www.maizegdb.org/assembly). After downloading "Zea_mays.AGPv4.dna.toplevel.fa.gz", make [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#getting-started-with-bowtie-2-lambda-phage-example) reference index for chromosomes (ignoring organellar genomes and scaffolds).
