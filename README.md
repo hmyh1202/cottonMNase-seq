@@ -33,9 +33,15 @@ We usually use [Sickle](https://github.com/najoshi/sickle) to trim off sequences
     grep 'Reads with adapters' trimmed/*report.txt >>trimmed/summary.txt
     grep 'Total written' trimmed/*report.txt >>trimmed/summary.txt
     grep 'Number of sequence pairs' trimmed/*report.txt >>trimmed/summary.txt
+    # QC again
+    fastqc -o QCreport/trimmed/ trimmed/*val*
 
-### Maize B73 reference genome
-Although (Rodgers-Melnick et al. PNAS 2016) used maize B73 AGPv3 genome assembly, the current version is AGPv4 as describer [here](http://www.maizegdb.org/assembly). After downloading "Zea_mays.AGPv4.dna.toplevel.fa.gz", make [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#getting-started-with-bowtie-2-lambda-phage-example) reference index for chromosomes (ignoring organellar genomes and scaffolds).
+### Cotton reference genomes
+[CottonGen](https://www.cottongen.org/data/download/genome#Ass) compiles all published cotton genomes, and I will need 4 different reference genomes:
+* AD1_NBI - Zhang et al, 2016 Nature biotechnology
+* D5_JGI - Paterson et al. 2012 Nature
+* A2_BGI - Li et al. 2014 Nature Genetics
+* combind A2 and D5 for A2xD5 mapping
 
     mkdir maizeRef
     cd maizeRef
