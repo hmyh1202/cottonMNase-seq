@@ -27,7 +27,6 @@ We usually use [Sickle](https://github.com/najoshi/sickle) to trim off sequences
     module load python 
     # python needed for Cutadapt
     trim_galore_v0.4.2/trim_galore --paired -o trimmed/ rawfastq/M1H_1.fq.gz rawfastq/M1H_2.fq.gz
-       ####bookmark
     # check results
     grep 'Total reads processed' trimmed/*report.txt >trimmed/summary.txt
     grep 'Reads with adapters' trimmed/*report.txt >>trimmed/summary.txt
@@ -37,17 +36,32 @@ We usually use [Sickle](https://github.com/najoshi/sickle) to trim off sequences
     fastqc -o QCreport/trimmed/ trimmed/*val*
 
 ### Cotton reference genomes
-[CottonGen](https://www.cottongen.org/data/download/genome#Ass) compiles all published cotton genomes, and I will need 4 different reference genomes:
-* AD1_NBI - Zhang et al, 2016 Nature biotechnology
-* D5_JGI - Paterson et al. 2012 Nature
-* A2_BGI - Li et al. 2014 Nature Genetics
-* combind A2 and D5 for A2xD5 mapping
+[CottonGen](https://www.cottongen.org/data/download/genome#Ass) compiles all published cotton genomes, and I will need 4 different reference genomes for AD1, A2, D5 and A2xD5.
 
-    mkdir maizeRef
-    cd maizeRef
-    zcat Zea_mays.AGPv4.dna.toplevel.fa.gz | head -35105648 >Zea_mays.AGPv4.chr10.fa
+    mkdir refGenomes
+    cd refGenomes
     module load bowtie2
-    bowtie2-build Zea_mays.AGPv4.chr10.fa maize
+    ### D5_JGI - Paterson et al. 2012 Nature
+    ln -s ~/jfw-lab/GenomicResources/archived_resources/gmapdb/D5/Dgenome2_13.fasta
+    ### A2_BGI - Li et al. 2014 Nature Genetics
+    ln -s ~/jfw-lab/GenomicResources/archived_resources/gmapdb/A2Li/A2genome_13.fasta
+    ### AD1_NBI - Zhang et al, 2016 Nature biotechnology
+    ln -s ~/jfw-lab/GenomicResources/archived_resources/gmapdb/AD1TM1/TM1.fasta
+    grep -n '>scaffold' TM1.fasta |head -10   #32244283:>scaffold27_A01
+    head -32244282 TM1.fasta >TM1_26.fasta 
+    ### make my own ref for A2xD5
+    cat A2genome_13.fasta Dgenome2_13.fasta >F1_26t.fasta
+    grep '>' F1_26t.fasta 
+    sed 's/>Chr/>D5_chr/g' F1_26t.fasta >F1_26.fasta
+    grep '>' F1_26.fasta
+    rm F1_26t.fasta 
+    
+    # build bowtie2 ref
+    bowtie2-build TM1_26.fasta TM1
+    bowtie2-build F1_26.fasta F1
+    bowtie2-build A2genome_13.fasta A2
+    bowtie2-build Dgenome2_13.fasta D5
+    ####bookmark
 
 ## Read mapping and calling of hypersensive sites
 (Rodgers-Melnick et al. PNAS 2016): "After the computational trimming of adaptor sequences using CutAdapt (40), paired-end reads were mapped to the maize B73 AGPv3 reference genome, using Bowtie2 with options “no-mixed,” “no-discordant,” “no-unal,” and “dovetail” (41) for each replicate digest and for the genomic DNA. BED files were made from the resulting BAM files, using bedtools bamtobed, filtered for minimal alignment quality (≥10), and read coverage in 10-bp intervals was calculated using coverageBed (42). The DNS values were obtained by subtracting the mean normalized depth (in reads per million) of the heavy digest replicates from those of the light digest replicates. In this way, positive DNS values correspond to MNase hypersensitive footprints (as defined by ref. 8; and referred to here as MNase HS regions), whereas negative DNS values correspond to nuclease hyper-resistant footprints (MRF, as per ref. 8). A Bayes factor criterion was used to classify as significantly hypersensitive."
@@ -56,8 +70,8 @@ We usually use [Sickle](https://github.com/najoshi/sickle) to trim off sequences
 Default setting `-k 1` report 1 alignment for each read/pair) should work, while some might need to be modified as required by downstream tools.
 
     mkdir mapping
-    bowtie2 -q -p 6 -t --no-mixed --no-discordant --no-unal --dovetail -x maizeRef/maize -1 trimmed/SRR2542701_1_val_1.fq -2 trimmed/SRR2542701_2_val_2.fq -S mapping/SRR2542701.sam 2>SRR2542701.log
-    samtools view -bS SRR2531768.sam | samtools sort - -o SRR2531768.sort.bam ; samtools index SRR2531768.sort.bam
+    bowtie2 -q -p 6 -t --no-mixed --no-discordant --no-unal --dovetail -x refGenomes/D5 -1 <(zcat trimmed/D1H_1_val_1.fq.gz) -2 <(zcat trimmed/D1H_2_val_2.fq.gz) -S mapping/D1H.sam 2>mapping/D1H.log
+    samtools view -bS D1H.sam | samtools sort -o D1H.sort.bam ; samtools index D1H.sort.bam
 
 * `-x maize`: use ref maize genome
 * `-1 trimmed/SRR2542701_1_val_1.fq`: paired end read 1
