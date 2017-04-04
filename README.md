@@ -61,7 +61,6 @@ We usually use [Sickle](https://github.com/najoshi/sickle) to trim off sequences
     bowtie2-build F1_26.fasta F1
     bowtie2-build A2genome_13.fasta A2
     bowtie2-build Dgenome2_13.fasta D5
-    ####bookmark
 
 ## Read mapping and calling of hypersensive sites
 (Rodgers-Melnick et al. PNAS 2016): "After the computational trimming of adaptor sequences using CutAdapt (40), paired-end reads were mapped to the maize B73 AGPv3 reference genome, using Bowtie2 with options “no-mixed,” “no-discordant,” “no-unal,” and “dovetail” (41) for each replicate digest and for the genomic DNA. BED files were made from the resulting BAM files, using bedtools bamtobed, filtered for minimal alignment quality (≥10), and read coverage in 10-bp intervals was calculated using coverageBed (42). The DNS values were obtained by subtracting the mean normalized depth (in reads per million) of the heavy digest replicates from those of the light digest replicates. In this way, positive DNS values correspond to MNase hypersensitive footprints (as defined by ref. 8; and referred to here as MNase HS regions), whereas negative DNS values correspond to nuclease hyper-resistant footprints (MRF, as per ref. 8). A Bayes factor criterion was used to classify as significantly hypersensitive."
@@ -71,17 +70,19 @@ Default setting `-k 1` report 1 alignment for each read/pair) should work, while
 
     mkdir mapping
     bowtie2 -q -p 6 -t --no-mixed --no-discordant --no-unal --dovetail -x refGenomes/D5 -1 <(zcat trimmed/D1H_1_val_1.fq.gz) -2 <(zcat trimmed/D1H_2_val_2.fq.gz) -S mapping/D1H.sam 2>mapping/D1H.log
-    samtools view -bS D1H.sam | samtools sort -o D1H.sort.bam ; samtools index D1H.sort.bam
+    samtools view -bS D1H.sam | samtools sort - -o D1H.sort.bam ; samtools index D1H.sort.bam
 
-* `-x maize`: use ref maize genome
-* `-1 trimmed/SRR2542701_1_val_1.fq`: paired end read 1
-* `-2 trimmed/SRR2542701_2_val_2.fq`: paired end read 2
+* `-x refGenomes/D5`: use ref genome
+* `-1 trimmed/D1H_1_val_1.fq`: paired end read 1
+* `-2 trimmed/D1H_2_val_2.fq`: paired end read 2
 * `-q`: takes fastq files
 * `-p 6`: use 6 thread
 * `-t`: Print the amount of wall-clock time taken by each phase.
 * `--no-mixed --no-discordant`: discard discordant mapping
 * `--no-unal`: Suppress SAM records for reads that failed to align.
 * `--dovetail`: allow pair to overlap and over extend
+
+####bookmark
 
 ### Differential nucleosome occupancy analysis - [DANPOS2](https://sites.google.com/site/danposdoc/)
 
