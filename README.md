@@ -36,7 +36,7 @@ We usually use [Sickle](https://github.com/najoshi/sickle) to trim off sequences
     fastqc -o QCreport/trimmed/ trimmed/*val*
 
 ### Cotton reference genomes
-[CottonGen](https://www.cottongen.org/data/download/genome#Ass) compiles all published cotton genomes, and I will need 4 different reference genomes for AD1, A2, D5 and A2xD5.
+[CottonGen](https://www.cottongen.org/data/download/genome#Ass) compiles all published cotton genomes, and I will need 4 different reference genomes for AD1, A2, D5 and A2xD5. An improved AD1 reference became available on [Phytozome](https://phytozome.jgi.doe.gov/pz/portal.html#!info?alias=Org_Ghirsutum_er).
 
     mkdir refGenomes
     cd refGenomes
@@ -54,10 +54,17 @@ We usually use [Sickle](https://github.com/najoshi/sickle) to trim off sequences
     grep '>' F1_26t.fasta 
     sed 's/>Chr/>D5_chr/g' F1_26t.fasta >F1_26.fasta
     grep '>' F1_26.fasta
-    rm F1_26t.fasta 
+    rm F1_26t.fasta
+    
+    ### AD1_458 - Saski et al, 2017 (in revision)
+    ln -s ~/jfw-lab/GenomicResources/archived_resources/AD1Saski/v1.1/assembly/Ghirsutum_458_v1.0.fa.gz
+    zcat Ghirsutum_458_v1.0.fa.gz |grep -n '>scaffold'|head -10 
+    # 27134894:>scaffold_27
+    zcat Ghirsutum_458_v1.0.fa.gz |head -27134893 >TM1new_26.fasta 
     
     # build bowtie2 ref
     bowtie2-build TM1_26.fasta TM1
+    bowtie2-build TM1new_26.fasta TM1new
     bowtie2-build F1_26.fasta F1
     bowtie2-build A2genome_13.fasta A2
     bowtie2-build Dgenome2_13.fasta D5
