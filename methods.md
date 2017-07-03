@@ -1,103 +1,25 @@
-# Data analysis of cotton MNase-seq datasets
+#Materials and Methods
+
+##Plant material
+Four *Gossypium* accessions were used in this study, including a natural allopolyploid, *G. hirsutum* (AD1) cultivar Acala Maxxa, and models of its A- and D-genome diploid progenitors, *G. arboreum* (A2) and *G. raimondii* (D5), as well as the corresponding interspecific diploid F1 hybrid (A2 × D5). The latter accession represents genome merger without genome doubling, while due to sterility, no synthetic allopolyploid has been created corresponding to this F1 hybrid. Two plants of each accession were grown in the Bessey Hall Greenhouse at Iowa State University (Ames, Iowa, USA) under controlled short-day condition (10 hour photoperiod with darkness from 5pm to 7am; 22/28°C, night/day). Mature leaf tissue was harvested from flowering branches at 5pm, and immediately flash frozen in liquid nitrogen and stored at −80°C.
+
+##Nucleus isolation
+As modified from @Vera_Differential_2014, four grams of tissue added with 10% (w/w) of PVPP were ground under liquid nitrogen with a mortar and pestle, following by formaldehyde cross-linking by stirring for 10 min in 40 mL fixation buffer (1.0 M 2-methyl-2,4-pentanediol, 10 mM PIPES⋅NaOH at pH 7.0, 10 mM MgCl2, 2% polyvinylpyrrolidone, 10 mM sodium metabisulfite, 5 mM β-mercaptoethanol, 0.5% sodium diethyldithiocarbamate trihydrate, 200 mM L-lysine, and 6 mM EGTA at pH 7.0) containing 1% formaldehyde. Fixation was stopped by adding 2 mL of 2.5M glycine and stirring for 5 min. To degrade and solubilize organelles, 4 mL of 10% Triton X-100 was added to suspension, followed by stirring for 10 min. The suspension was filtered through one layer of Miracloth (Calbiochem) twice and placed in 50-mL centrifuge tubes. Nuclei was pelleted by centrifugation at 2,000 × g for 15 min at 4°C, and washed three times in 40 mL wash buffer (0.5 M 2-methyl-2,4-pentanediol, 10 mM PIPES⋅NaOH at pH 7.0, 10 mM MgCl2, 0.5% Triton X-100, 10 mM sodium metabisulfite, 5 mM β-mercaptoethanol, 200 mM L-lysine, and 6 mM EGTA at pH 7.0)
+
+##MNase digestion
+Nuclei pellets were resuspended in 2 mL MNase digestion buffer (50 mM HEPES at pH 7.6, 12.5% glycerol, 25 mM KCl, 4 mM MgCl2, and 1 mM CaCl2), and distributed into 500 uL aliquots. Different levels of nuclei digestion were conducted using 5.6 U/mL (heavy) and 0.4 U/mL (light) MNase, and incubated at 37°C for 10 min. Digestion was stopped with 50 mM EGTA on ice for 5 min. Digested nuclei were de-cross-linked at 65°C overnight in the presence of 1% SDS and 100 μg/mL proteinase K, and then treated with 40 μg/mL DNase-free RNaseA at 37 °C for an hour. DNA was extracted by phenol-chloroform extraction and precipitated with ethanol. Extracted DNA was electrophoresed on 2% agarose gel to inspect the MNase digestion ladders. DNA fragments smaller than 200 bp were purified with the Axygen™ AxyPrep Mag™ PCR Clean-up Kit (Fisher Scientific), following a double-sided SPRI bead size selection (0.9× followed by 1.1×).
+
+##Library construction and sequencing
+DNA concentration was measured using Qubit DNA Assay Kit in Qubit 2.0 Flurometer (Life Technology). Sixteen DNA sequencing libraries were prepared using the NEBNext Ultra DNA Library Prep Kit for Illumina (NEB), using manufacturer instructions. Indexed libraries were pooled and sequenced on ten Illumina HiSeq 2500 lanes with paired-end 150-cycle sequencing. Short-read data are deposited in the NCBI short read archive (SRP??????).
+
+##MNase-seq data pre-processing
+After quality filtering and trimming of adaptor sequences using CutAdapt [@Martin_Cutadapt_2011], paired-end reads generated from different *Gossypium* species were mapped against their corresponding reference genomes, including *G. hirsutum* AD1_NBI [@Zhang_tm1_2015], *G. arboreum* A2_BGI [@Li_Genome_2014] and *G. raimondii* D5_JGI [Paterson_Repeated_2012]. Following Bowtie2 mapping with options “no-mixed,” “no-discordant,” “no-unal,” and “dovetail” [@Langmead_Fast_2012], alignments of quality score ≥20 were retained for following analyses.
+
+--- 
+##Below to be edited
 ---
 
-## Preprocessing of DNA sequencing datasets
+Nucleosome calling and classification. Filtered mapping results were imported in R/Bioconductor framework (ref) and analyzed using R package nucleR (ref). Paired-end reads under 260 bp were trimmed to 50 bp around the nucleosome center. Genome-wide coverage in reads per million (RPM) was computed and normalized using the total number of reads from each sample. Noise filtering and peak calling were performed using nucleR parameters: pcKeepComp=0.02, peak width=147 bp, peak detection threshold=35%, minimal overlap=50 bp.
 
-### MNase-seq datasets
-Short-read data will be deposited in the NCBI short read archive ([SRP??????](http://trace.ddbj.nig.ac.jp/DRASearch/study?acc=SRP??????)), also as Biobroject [PRJNA??????](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA??????).
+Analysis of differential nuclease sensitivity. After the computational trimming of adaptor sequences using CutAdapt (40), paired-end reads were mapped to the maize B73 AGPv3 reference genome, using The DNS values were obtained by subtracting the mean normalized depth (in reads per million) of the heavy digest replicates from those of the light digest replicates. In this way, positive DNS values correspond to MNase hypersensitive footprints (as defined by ref. 8; and referred to here as MNase HS regions), whereas negative DNS values correspond to nuclease hyper-resistant footprints (MRF, as per ref. 8). A Bayes factor criterion was used to classify as significantly hypersensitive.
 
-#### Access to fastq files
-Paired-end reads of 16 samples: 4 species (A2, D5, A2xD5, Maxxa) X 2 digestive conditions (Heavy and Light) X 2 technical reps.
-
-    cd cottonLeaf/rawfastq
-    ln -s ~/jfw-lab/RawData/HGJ_leafMNase-seq/WTNHHW163125/data_release/raw_data/*gz .
-
-#### Checking read quality with [FastQC](http://www.bioinformatics.bbsrc.ac.uk/projects/fastqc/)
-    cd ..
-    module load fastqc/0.11.3
-    fastqc rawfastq/*
-    # move result files to QCreport folder
-    mkdir QCreport
-    mv rawfastq/*zip QCreport/
-    mv rawfastq/*html QCreport/
-    
-#### Quality trimming and adaptor removal
-We usually use [Sickle](https://github.com/najoshi/sickle) to trim off sequences below quality threshold, and another popular tool is  [Fastx toolkit](http://hannonlab.cshl.edu/fastx_toolkit/). One more alternative to remove adpaters or primers is [cutadapt](https://cutadapt.readthedocs.io/). Based FastQC results above, illumina universal adaptor removal is necessay, and [Trim Galore](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) appears to be a really nice wrapper tool of FastQC and Cutadapt, quite easy to use! 
-
-    module load python 
-    # python needed for Cutadapt
-    trim_galore_v0.4.2/trim_galore --paired -o trimmed/ rawfastq/M1H_1.fq.gz rawfastq/M1H_2.fq.gz
-    # check results
-    grep 'Total reads processed' trimmed/*report.txt >trimmed/summary.txt
-    grep 'Reads with adapters' trimmed/*report.txt >>trimmed/summary.txt
-    grep 'Total written' trimmed/*report.txt >>trimmed/summary.txt
-    grep 'Number of sequence pairs' trimmed/*report.txt >>trimmed/summary.txt
-    # QC again
-    fastqc -o QCreport/trimmed/ trimmed/*val*
-
-### Cotton reference genomes
-[CottonGen](https://www.cottongen.org/data/download/genome#Ass) compiles all published cotton genomes, and I will need 4 different reference genomes for AD1, A2, D5 and A2xD5. An improved AD1 reference became available on [Phytozome](https://phytozome.jgi.doe.gov/pz/portal.html#!info?alias=Org_Ghirsutum_er).
-
-    mkdir refGenomes
-    cd refGenomes
-    module load bowtie2
-    ### D5_JGI - Paterson et al. 2012 Nature
-    ln -s ~/jfw-lab/GenomicResources/archived_resources/gmapdb/D5/Dgenome2_13.fasta
-    ### A2_BGI - Li et al. 2014 Nature Genetics
-    ln -s ~/jfw-lab/GenomicResources/archived_resources/gmapdb/A2Li/A2genome_13.fasta
-    ### AD1_NBI - Zhang et al, 2016 Nature biotechnology
-    ln -s ~/jfw-lab/GenomicResources/archived_resources/gmapdb/AD1TM1/TM1.fasta
-    grep -n '>scaffold' TM1.fasta |head -10   #32244283:>scaffold27_A01
-    head -32244282 TM1.fasta >TM1_26.fasta 
-    ### make my own ref for A2xD5
-    cat A2genome_13.fasta Dgenome2_13.fasta >F1_26t.fasta
-    grep '>' F1_26t.fasta 
-    sed 's/>Chr/>D5_chr/g' F1_26t.fasta >F1_26.fasta
-    grep '>' F1_26.fasta
-    rm F1_26t.fasta
-    
-    ### AD1_458 - Saski et al, 2017 (in revision)
-    ln -s ~/jfw-lab/GenomicResources/archived_resources/AD1Saski/v1.1/assembly/Ghirsutum_458_v1.0.fa.gz
-    zcat Ghirsutum_458_v1.0.fa.gz |grep -n '>scaffold'|head -10 
-    # 27134894:>scaffold_27
-    zcat Ghirsutum_458_v1.0.fa.gz |head -27134893 >TM1new_26.fasta 
-    
-    # build bowtie2 ref
-    bowtie2-build TM1_26.fasta TM1
-    bowtie2-build TM1new_26.fasta TM1new
-    bowtie2-build F1_26.fasta F1
-    bowtie2-build A2genome_13.fasta A2
-    bowtie2-build Dgenome2_13.fasta D5
-
-## Read mapping and calling of hypersensive sites
-(Rodgers-Melnick et al. PNAS 2016): "After the computational trimming of adaptor sequences using CutAdapt (40), paired-end reads were mapped to the maize B73 AGPv3 reference genome, using Bowtie2 with options “no-mixed,” “no-discordant,” “no-unal,” and “dovetail” (41) for each replicate digest and for the genomic DNA. BED files were made from the resulting BAM files, using bedtools bamtobed, filtered for minimal alignment quality (≥10), and read coverage in 10-bp intervals was calculated using coverageBed (42). The DNS values were obtained by subtracting the mean normalized depth (in reads per million) of the heavy digest replicates from those of the light digest replicates. In this way, positive DNS values correspond to MNase hypersensitive footprints (as defined by ref. 8; and referred to here as MNase HS regions), whereas negative DNS values correspond to nuclease hyper-resistant footprints (MRF, as per ref. 8). A Bayes factor criterion was used to classify as significantly hypersensitive."
-
-### Bowtie2 mapping
-Default setting `-k 1` report 1 alignment for each read/pair) should work, while some might need to be modified as required by downstream tools.
-
-    mkdir mapping
-    bowtie2 -q -p 6 -t --no-mixed --no-discordant --no-unal --dovetail -x refGenomes/D5 -1 <(zcat trimmed/D1H_1_val_1.fq.gz) -2 <(zcat trimmed/D1H_2_val_2.fq.gz) -S mapping/D1H.sam 2>mapping/D1H.log
-    samtools view -bS D1H.sam | samtools sort - -o D1H.sort.bam ; samtools index D1H.sort.bam
-
-* `-x refGenomes/D5`: use ref genome
-* `-1 trimmed/D1H_1_val_1.fq`: paired end read 1
-* `-2 trimmed/D1H_2_val_2.fq`: paired end read 2
-* `-q`: takes fastq files
-* `-p 6`: use 6 thread
-* `-t`: Print the amount of wall-clock time taken by each phase.
-* `--no-mixed --no-discordant`: discard discordant mapping
-* `--no-unal`: Suppress SAM records for reads that failed to align.
-* `--dovetail`: allow pair to overlap and over extend
-
-####bookmark
-
-### Differential nucleosome occupancy analysis - [DANPOS2](https://sites.google.com/site/danposdoc/)
-
-### Profiling Nucleopostioning - [nucleR](http://bioconductor.org/packages/release/bioc/html/nucleR.html) & [NUCwave](http://nucleosome.usal.es/nucwave/)
-Briefly, we need to examine the wave-length patterns of mapping coverage on the reference genome, and then specifically locate peaks that fit the description of nucleosomes - proper length, non-overlapping, etc.
-
-(Zhang et al. 2015): "Well-positioned and loosely positioned nucleosomes were identified using nucleR (Flores and Orozco, 2011). ... We used the filterFFT function of nucleR to remove noise and smooth the read count score of each position along chromosomes with the parameter pcKeepComp = 0.01. After noise removal, nucleosome peaks and centers/dyads were determined using the peakDetection function (threshold = 25%, score = true, width = 140). Overlapped peaks were merged into longer regions, which were defined as loosely positioned nucleosomes, and distinct individual peaks were defined as well-positioned nucleosomes. If the length of merged peaks is longer than 150 bp, this region is considered to contain more than two nucleosome dyads and thus, contains loosely positioned nucleosomes. If the length of merged peaks is shorter than 150 bp, this region is considered to contain a well-positioned nucleosome."
-
-The phasogram and average distance between two adjacent nucleosomes were calculated using our previously reported methods (Zhang et al., 2013). The nucleosome occupancy change scores were calculated by DANPOS (Chen et al., 2013). Analyses of dinucleotide frequency followed previously published methods (Locke et al., 2010; Valouev et al., 2011).
-
-## Visualization and other result presentation
