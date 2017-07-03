@@ -1,25 +1,26 @@
-#Materials and Methods
+# Materials and Methods
 
-##Plant material
+## Plant material
 Four *Gossypium* accessions were used in this study, including a natural allopolyploid, *G. hirsutum* (AD1) cultivar Acala Maxxa, and models of its A- and D-genome diploid progenitors, *G. arboreum* (A2) and *G. raimondii* (D5), as well as the corresponding interspecific diploid F1 hybrid (A2 × D5). The latter accession represents genome merger without genome doubling, while due to sterility, no synthetic allopolyploid has been created corresponding to this F1 hybrid. Two plants of each accession were grown in the Bessey Hall Greenhouse at Iowa State University (Ames, Iowa, USA) under controlled short-day condition (10 hour photoperiod with darkness from 5pm to 7am; 22/28°C, night/day). Mature leaf tissue was harvested from flowering branches at 5pm, and immediately flash frozen in liquid nitrogen and stored at −80°C.
 
-##Nucleus isolation
+## Nucleus isolation
 As modified from @Vera_Differential_2014, four grams of tissue added with 10% (w/w) of PVPP were ground under liquid nitrogen with a mortar and pestle, following by formaldehyde cross-linking by stirring for 10 min in 40 mL fixation buffer (1.0 M 2-methyl-2,4-pentanediol, 10 mM PIPES⋅NaOH at pH 7.0, 10 mM MgCl2, 2% polyvinylpyrrolidone, 10 mM sodium metabisulfite, 5 mM β-mercaptoethanol, 0.5% sodium diethyldithiocarbamate trihydrate, 200 mM L-lysine, and 6 mM EGTA at pH 7.0) containing 1% formaldehyde. Fixation was stopped by adding 2 mL of 2.5M glycine and stirring for 5 min. To degrade and solubilize organelles, 4 mL of 10% Triton X-100 was added to suspension, followed by stirring for 10 min. The suspension was filtered through one layer of Miracloth (Calbiochem) twice and placed in 50-mL centrifuge tubes. Nuclei was pelleted by centrifugation at 2,000 × g for 15 min at 4°C, and washed three times in 40 mL wash buffer (0.5 M 2-methyl-2,4-pentanediol, 10 mM PIPES⋅NaOH at pH 7.0, 10 mM MgCl2, 0.5% Triton X-100, 10 mM sodium metabisulfite, 5 mM β-mercaptoethanol, 200 mM L-lysine, and 6 mM EGTA at pH 7.0)
 
-##MNase digestion
+## MNase digestion
 Nuclei pellets were resuspended in 2 mL MNase digestion buffer (50 mM HEPES at pH 7.6, 12.5% glycerol, 25 mM KCl, 4 mM MgCl2, and 1 mM CaCl2), and distributed into 500 uL aliquots. Different levels of nuclei digestion were conducted using 5.6 U/mL (heavy) and 0.4 U/mL (light) MNase, and incubated at 37°C for 10 min. Digestion was stopped with 50 mM EGTA on ice for 5 min. Digested nuclei were de-cross-linked at 65°C overnight in the presence of 1% SDS and 100 μg/mL proteinase K, and then treated with 40 μg/mL DNase-free RNaseA at 37 °C for an hour. DNA was extracted by phenol-chloroform extraction and precipitated with ethanol. Extracted DNA was electrophoresed on 2% agarose gel to inspect the MNase digestion ladders. DNA fragments smaller than 200 bp were purified with the Axygen™ AxyPrep Mag™ PCR Clean-up Kit (Fisher Scientific), following a double-sided SPRI bead size selection (0.9× followed by 1.1×).
 
-##Library construction and sequencing
+## Library construction and sequencing
 DNA concentration was measured using Qubit DNA Assay Kit in Qubit 2.0 Flurometer (Life Technology). Sixteen DNA sequencing libraries were prepared using the NEBNext Ultra DNA Library Prep Kit for Illumina (NEB), using manufacturer instructions. Indexed libraries were pooled and sequenced on ten Illumina HiSeq 2500 lanes with paired-end 150-cycle sequencing. Short-read data are deposited in the NCBI short read archive (SRP??????).
 
-##MNase-seq data pre-processing
+## MNase-seq data pre-processing
 After quality filtering and trimming of adaptor sequences using CutAdapt [@Martin_Cutadapt_2011], paired-end reads generated from different *Gossypium* species were mapped against their corresponding reference genomes, including *G. hirsutum* AD1_NBI [@Zhang_tm1_2015], *G. arboreum* A2_BGI [@Li_Genome_2014] and *G. raimondii* D5_JGI [Paterson_Repeated_2012]. Following Bowtie2 mapping with options “no-mixed,” “no-discordant,” “no-unal,” and “dovetail” [@Langmead_Fast_2012], alignments of quality score ≥20 were retained for following analyses.
 
 --- 
-##Below to be edited
+## Below to be edited
 ---
 
-Nucleosome calling and classification. Filtered mapping results were imported in R/Bioconductor framework (ref) and analyzed using R package nucleR (ref). Paired-end reads under 260 bp were trimmed to 50 bp around the nucleosome center. Genome-wide coverage in reads per million (RPM) was computed and normalized using the total number of reads from each sample. Noise filtering and peak calling were performed using nucleR parameters: pcKeepComp=0.02, peak width=147 bp, peak detection threshold=35%, minimal overlap=50 bp.
+## Nucleosome calling and classification
+Filtered mapping results were imported in R/Bioconductor framework (ref) and analyzed using R package nucleR (ref). Paired-end reads under 260 bp were trimmed to 50 bp around the nucleosome center. Genome-wide coverage in reads per million (RPM) was computed and normalized using the total number of reads from each sample. Noise filtering and peak calling were performed using nucleR parameters: pcKeepComp=0.02, peak width=147 bp, peak detection threshold=35%, minimal overlap=50 bp.
 
-Analysis of differential nuclease sensitivity. After the computational trimming of adaptor sequences using CutAdapt (40), paired-end reads were mapped to the maize B73 AGPv3 reference genome, using The DNS values were obtained by subtracting the mean normalized depth (in reads per million) of the heavy digest replicates from those of the light digest replicates. In this way, positive DNS values correspond to MNase hypersensitive footprints (as defined by ref. 8; and referred to here as MNase HS regions), whereas negative DNS values correspond to nuclease hyper-resistant footprints (MRF, as per ref. 8). A Bayes factor criterion was used to classify as significantly hypersensitive.
+## Analysis of differential nuclease sensitivity. After the computational trimming of adaptor sequences using CutAdapt (40), paired-end reads were mapped to the maize B73 AGPv3 reference genome, using The DNS values were obtained by subtracting the mean normalized depth (in reads per million) of the heavy digest replicates from those of the light digest replicates. In this way, positive DNS values correspond to MNase hypersensitive footprints (as defined by ref. 8; and referred to here as MNase HS regions), whereas negative DNS values correspond to nuclease hyper-resistant footprints (MRF, as per ref. 8). A Bayes factor criterion was used to classify as significantly hypersensitive.
 
