@@ -113,6 +113,14 @@ Taking sample **A6H** for example, by inputing quality filtered mapping results 
 * BigWig file: `A6H_q20.coverage.bw`
 * GFF file of nucleosome position: `A6H_q20.nucleosome.gff`
 
+## Downsteam analysis
+
+Visualization and exploration of sequencing tracks (`BigWig`) around genomic features (e.g. TSS) is the key of downstream analysis. Many tools are availble and reviewed in a biostars thread [here](https://www.biostars.org/p/180314/):
+
+* [Deeptools](http://deeptools.readthedocs.io/en/latest/index.html) - 
+* [SeqPlots](http://przemol.github.io/seqplots/) - corresponding genomic packages are required from bioconductor
+* [Genomation](https://bioconductor.org/packages/release/bioc/html/genomation.html)
+
 
 ### bookmark: below to be sorted 
 ---

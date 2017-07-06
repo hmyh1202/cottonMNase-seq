@@ -13,7 +13,7 @@ To investigate differential regulatory control of duplicated genes (*aka* homoeo
 
 - Materials and Methods: [methods.md](methods.md)
 - Data analysis: [dataAnalysis.md](dataAnalysis.md)
-- Results:
+- Results: [results.md](results.md)
 - Discussions:
 
 ## Scripts
