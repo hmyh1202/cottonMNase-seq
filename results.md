@@ -18,3 +18,11 @@ The difference values of light and heavy digestions (D1D) exhibited a MSF signat
 Next I plotted the nucleosome occupancy scores generated drom nucleoR analysis, which was processed to remove noise and amplify nucleome signals. The meta profile below showed clear nucleosome "free" region at TSS, flanked by well aranged nucleosome peaks.
 
 ![nucleosome](tempResults/plotMeta_nucl.png)
+
+### Nucleosomal occupancy profiles and nuclease sensitivity are associated with gene expression
+Analyses based on all sequences without size partition.
+![expression](tempResults/expressionAssociation.png)
+
+### Divergence between diploids and between sub-genomes in allopolyploid cotton
+Analyses based on all sequences without size partition.
+![AvsD](tempResults/genomeComparison.png)

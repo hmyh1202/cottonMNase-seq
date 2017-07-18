@@ -117,10 +117,71 @@ Taking sample **A6H** for example, by inputing quality filtered mapping results 
 
 Visualization and exploration of sequencing tracks (`BigWig`) around genomic features (e.g. TSS) is the key of downstream analysis. Many tools are availble and reviewed in a biostars thread [here](https://www.biostars.org/p/180314/):
 
-* [Deeptools](http://deeptools.readthedocs.io/en/latest/index.html) - 
-* [SeqPlots](http://przemol.github.io/seqplots/) - corresponding genomic packages are required from bioconductor
-* [Genomation](https://bioconductor.org/packages/release/bioc/html/genomation.html)
+* [Deeptools](http://deeptools.readthedocs.io/en/latest/index.html) - faster than R packages, waiting for bioIT to install
+* [SeqPlots](http://przemol.github.io/seqplots/) - corresponding genomic packages are required from bioconductor, useless for cotton, shame
+* [Genomation](https://bioconductor.org/packages/release/bioc/html/genomation.html) - R package
+* [ngsplot](https://github.com/shenlab-sinai/ngsplot)
 
+### Assess the reproducibility of replicates
+Using coverages before size partition, check if Replicates correlate better than non-replicates. Using [Deeptools](http://deeptools.readthedocs.io/en/latest/index.html) for visualization of sample correlations based on the output of `multiBamSummary` or `multiBigwigSummary`. Pearson or Spearman methods are available to compute correlation coefficients. 
+
+    multiBigwigSummary bins -b *q20_unified.bw -out results.npz
+    plotCorrelation -in results.npz -o plotHeatmap_pearson.pdf --corMethod pearson --skipZeros --whatToPlot heatmap --colorMap RdYlBu --plotNumbers --outFileCorMatrix plotHeatmap_pearson.tab.txt
+
+If good correlations are seen between replicates, we can consider pooling reps in following analysis.
+
+### Check sequencing coverage, fragment size, etc.
+Two plots were generated. The first one simply represents the frequencies of the found read coverages, which helps you judge how relevant the mean coverage value (printed next to the sample name) is. If the distribution of read coverages is more or less homoskedatic and, ideally, normally distributed (most likely it won’t be), then the mean is a very appropriate proxy for sequencing depth. The second plot shows what is the fraction of the genome that has a certain depth. 
+
+    plotCoverage -b *sort.bam -o plotCoverage.pdf --ignoreDuplicates --minMappingQuality 20
+
+For paired-end samples, we often additionally check whether the fragment sizes are more or less what we would expected based on the library preparation.
+
+    bamPEFragmentSize -b *sort.bam -hist plotPEFragmentSize.png
+    
+### Visualize nucleosome occupancy coverage on genomic features
+
+First, need to prepare genomic feature `bed` file:
+
+    module load bedops
+    
+    cd mappingD
+    head ~/jfw-lab/GenomicResources/archived_resources/gmapdb/D5/Dgenome2_13.gene.gff
+    gff2bed < ~/jfw-lab/GenomicResources/archived_resources/gmapdb/D5/Dgenome2_13.gene.gff >D5.gene.bed
+    cd ..
+    
+    cd mappingM
+    head ~/jfw-lab/GenomicResources/archived_resources/gmapdb/AD1TM1/Gossypium_hirsutum_v1.1.gene.gff3
+    gff2bed < <(grep 'gene' ~/jfw-lab/GenomicResources/archived_resources/gmapdb/AD1TM1/Gossypium_hirsutum_v1.1.gene.gff3) > TM1.gene.bed
+    grep '^A' TM1.gene.bed >TM1.gene.A.bed
+    grep '^D' TM1.gene.bed >TM1.gene.D.bed
+    cd ..
+    
+    cd mappingA
+    head ~/jfw-lab/GenomicResources/archived_resources/gmapdb/A2Li/A2Li.exons.gff
+    gff2bed < <(grep "mRNA" ~/jfw-lab/GenomicResources/archived_resources/gmapdb/A2Li/A2Li.gene.gff) > A2.gene.bed
+    cd ..
+    
+    cd mappingF
+    cat mappingA/A2.gene.bed <(sed 's/^Chr/D5_chr/g' mappingDref/mappingD/D5.gene.bed) >F.gene.bed
+    grep '^A' F.gene.bed >F.gene.A.bed
+    grep '^D' F.gene.bed >F.gene.D.bed
+    cd ..
+    
+Make plots for visualization. Generate heatmap of read coverages, for	visualizing the read coverages for genomic regions. The default setting plots profile on top of heatmaps.
+
+    computeMatrix reference-point -S *q20_unified.bw -R D5.gene.bed -o TSS.gz --referencePoint TSS -b 1500 -a 1500 --skipZeros 
+    plotHeatmap -m TSS.gz -out plotHeatmap_TSS.png
+    
+    computeMatrix reference-point -S *q20_unified.bw -R D5.gene.bed -o TES.gz --referencePoint TES -b 1500 -a 1500 --skipZeros 
+    plotHeatmap -m TES.gz -out plotHeatmap_TES.png
+    
+    
+    computeMatrix scale-regions -S *q20_unified.bw -R D5.gene.bed -o scaleGeneBody.gz --regionBodyLength 3000 -b 1500 -a 1500 --skipZeros
+    plotHeatmap -m scaleGeneBody.gz -out plotHeatmap_scaleGeneBody.png
+    
+In addition, generate summary plot of "meta-profile", for visualizing the average read coverages over a group of genomic regions, and output `.tab` file for R analysis.
+    plotProfile -m scaleGeneBody.gz --perGroup -out plotProfileGroup.png --outFileNameData plotProfile.tab
 
 ### bookmark: below to be sorted 
 ---

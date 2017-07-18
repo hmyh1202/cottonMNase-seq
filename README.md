@@ -22,3 +22,4 @@ To investigate differential regulatory control of duplicated genes (*aka* homoeo
 - Bowtie2 mapping: [runBowtie2.D.sh](runBowtie2.D.sh) is an example for D-genome reads mapped against D-genome reference.
 - Differential nuclease sensitivity profiling analysis: [dns.r](dns.r)
 - Nucleosome calling and classification: [nucleR.r](nucleR.r) & [nucleR.source.r](nucleR.source.r)
+- Assess the reproducibility of replicates: 
