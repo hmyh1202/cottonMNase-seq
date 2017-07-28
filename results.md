@@ -1,5 +1,13 @@
 # Preliminary results
 
+## Assessment of data quality
+
+The percentage of MNase-seq reads that aligned to corresponding reference genomes ranges from 91% to 98%. Diploid cotton D5 reference genome outperformed other reference genomes for read alignments with Q>20: 80-86% D reads were mapped with Q>20, while for other reads 60-70% reads were mapped with Q>20.
+
+Genomic coverage profiles of MNase-seq results were highly reproducilble between biological replicates (R2>0.9).
+
+### 
+
 ## Heatmap and plot of meta-profiles of nucleosome occupancy scores around TSS
 
 ### From differential nuclease sensitivity profiling dataset
@@ -22,6 +30,7 @@ Next I plotted the nucleosome occupancy scores generated drom nucleoR analysis, 
 ### Nucleosomal occupancy profiles and nuclease sensitivity are associated with gene expression
 Analyses based on all sequences without size partition.
 ![expression](tempResults/expressionAssociation.png)
+![expression&size](tempResults/expressionAssociation_size.png)
 
 ### Divergence between diploids and between sub-genomes in allopolyploid cotton
 Analyses based on all sequences without size partition.

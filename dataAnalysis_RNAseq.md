@@ -54,11 +54,13 @@ For both MNase-seq and RNA-seq experiments, mature leaf tissue was harvested fro
     bowtie2-build A2genome_13.fasta A2
     bowtie2-build Dgenome2_13.fasta D5
 
-### mapping
+### Bowtie2-RSEM mapping
 
     bash runBowtie2.D.sh >runBowtie2.D.071417.txt 2>&1
+    
 
 ????why does bowtie2 mapping rate so low???
 
 ## Expression profile of gene sets
+
 

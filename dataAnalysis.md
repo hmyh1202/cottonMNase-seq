@@ -1,6 +1,14 @@
 # Data analysis of cotton MNase-seq datasets
 ---
 
+Outline: 
+
+* Process reads: quality filter and trimming
+* Map reads: mapping rates, check consistency acorss libraries
+* Generate and compare genomic coverage profiles: nucleosome occupancy (heavy & light), nuclease sensitivity (Light-heavy), nucleosome dycad positioning
+* Peak calling from nuclease sensitivity profile to infer potential regulatory regions
+* Investigate the genomic/genetic location of peaks, correlation with expression, etc. 
+
 ## Preprocessing of DNA sequencing datasets
 
 ### MNase-seq datasets
