@@ -9,7 +9,7 @@ Outline:
 * Peak calling from nuclease sensitivity profile to infer potential regulatory regions
 * Investigate the genomic/genetic location of peaks, correlation with expression, etc. 
 
-## Preprocessing of DNA sequencing datasets
+## 1.Preprocessing of DNA sequencing datasets
 
 ### MNase-seq datasets
 Short-read data will be deposited in the NCBI short read archive ([SRP??????](http://trace.ddbj.nig.ac.jp/DRASearch/study?acc=SRP??????)), also as Biobroject [PRJNA??????](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA??????).
@@ -18,7 +18,8 @@ Short-read data will be deposited in the NCBI short read archive ([SRP??????](ht
 Paired-end reads of 16 samples: 4 species (A2, D5, A2xD5, Maxxa) X 2 digestive conditions (Heavy and Light) X 2 technical reps.
 
     cd cottonLeaf/rawfastq
-    ln -s ~/jfw-lab/RawData/HGJ_leafMNase-seq/WTNHHW163125/data_release/raw_data/*gz .
+    ln -s ~/jfw-lab/RawData/HGJ_leafMNase-seq/WTNHHW163125/Feb2017/*gz .
+    ln -s ~/jfw-lab/RawData/HGJ_leafMNase-seq/WTNHHW163125/Feb2018/*gz .
 
 #### Checking read quality with [FastQC](http://www.bioinformatics.bbsrc.ac.uk/projects/fastqc/)
     cd ..
@@ -77,7 +78,7 @@ We usually use [Sickle](https://github.com/najoshi/sickle) to trim off sequences
     bowtie2-build A2genome_13.fasta A2
     bowtie2-build Dgenome2_13.fasta D5
 
-## Read mapping and calling of hypersensive sites
+## 2.Read mapping and calling of hypersensive sites
 (Rodgers-Melnick et al. PNAS 2016): "After the computational trimming of adaptor sequences using CutAdapt (40), paired-end reads were mapped to the maize B73 AGPv3 reference genome, using Bowtie2 with options “no-mixed,” “no-discordant,” “no-unal,” and “dovetail” (41) for each replicate digest and for the genomic DNA. BED files were made from the resulting BAM files, using bedtools bamtobed, filtered for minimal alignment quality (≥10), and read coverage in 10-bp intervals was calculated using coverageBed (42). The DNS values were obtained by subtracting the mean normalized depth (in reads per million) of the heavy digest replicates from those of the light digest replicates. In this way, positive DNS values correspond to MNase hypersensitive footprints (as defined by ref. 8; and referred to here as MNase HS regions), whereas negative DNS values correspond to nuclease hyper-resistant footprints (MRF, as per ref. 8). A Bayes factor criterion was used to classify as significantly hypersensitive."
 
 ### Bowtie2 mapping
@@ -103,13 +104,48 @@ Bowtie2 mapping results in `SAM` format were converted to `BAM` with a quality f
 See pipeline scripts in [dns.r](dns.r).
 
 Taking sample **A6** for example, by inputing mapping results of its heavy and light MNase-seq data - `A6H.sam` & `A6L.sam`, output results include:
+
 * Reference chromosome sizes: `chr.size.txt`
 * Density plot of mapped fragment sizes: `sizeDistribution.pdf`
 * BAM files: `A6H_q20.bam` & `A6L_q20.bam`
 * BED files: `A6H_q20.bed` & `A6L_q20.bed`
 * BED files parsed by size range: `A6H_q20_000-130.bed`, `A6H_q20_130-260.bed`, `A6L_q20_000-130.bed`, `A6L_q20_130-260.bed`
-* BedGrapgh files of genome coverage: `A6H_q20_000-130.bg`, `A6H_q20_130-260.bg`, `A6L_q20_000-130.bg`, `A6L_q20_130-260.bg`, `A6D_q20_000-130.bg`, `A6D_q20_130-260.bg`
-* BigWig files:  `A6H_q20_000-130.bw`, `A6H_q20_130-260.bw`, `A6L_q20_000-130.bw`, `A6L_q20_130-260.bw`, `A6D_q20_000-130.bw`, `A6D_q20_130-260.bw`
+* BedGrapgh files of genome coverage: `A6H_q20_unified.bg`,`A6L_q20_unified.bg`,`A6D_q20_unified.bg`; `A6H_q20_000-130_unified.bg`, `A6L_q20_000-130_unified.bg`, `A6D_q20_000-130_unified.bg`;  `A6H_q20_130-260_unified.bg`,  `A6L_q20_130-260_unified.bg`, `A6D_q20_130-260_unified.bg`. 
+* BigWig files:  `A6H_q20_unified.bw`, `A6L_q20_unified.bw`, `A6D_q20.bw_unified`; `A6H_q20_000-130_unified.bw`, `A6L_q20_000-130_unified.bw`, `A6D_q20_000-130_unified.bw`;  `A6H_q20_130-260_unified.bw`,  `A6L_q20_130-260_unified.bw`, `A6D_q20_130-260_unified.bw`. 
+
+
+### Segmentation of sensitive and resistent fragments
+
+The algorithm [iSeg](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2140-3) identifies candidate segments from normlized differential genome coverage.
+
+See pipeline scripts in [iseg.r](iseg.r). Output results include:
+
+* BedGrapgh files of 20bp sliding window coverage: `A6H_q20_chr.size_w20.bg`, `A6L_q20_chr.size_w20.bg`.
+* Quantile normalized BedGraph: `A6H_q20_chr.size_w20_qnorm.bg`, `A6L_q20_chr.size_w20_qnorm.bg`,
+`A6D_q20_chr.size_w20_qnorm.bg`.
+
+Convert BedGraph to gff file
+    
+    awk '{print $1,$2,$3,".",".",$4}' OFS='\t' A6D_q20_chr.size_w20_qnorm.bg > A6D_q20_chr.size_w20_qnorm.gff
+
+Run iSeg:
+
+    ./iseg -p MeanCut.csv -fdr 0.05 -bc 3.0 -minwl 10 -maxwl 100 -sig 1e-3 -d D2D_Chr13.bg -of D2D_Chr13_x0_bc3.0.txt -mad 0.10657938 -sd 0.170028794833 -cz -ctp
+
+    ## Options:
+    # -p: file for test statistic cutoff. default: MeanCut.csv.
+    # -maxwl: Maximum Window length, the maximum size of a detected segment.
+    # -minwl: Minimum Window length, the minimum size of a detected segment.
+    # -bc: biological cutoff. For instance, a segment is significant only if the segment mean exceeds twice the standard deviation of the segment when set to 2.
+    # -sig: An intial cut-off to determine significance. Usually, 0.001 or 0.0001 is sufficient.
+    # -fdr: false discovery rate (FDR); determines the cut-off to call a significant region using Benjamini-Hochberg procedure.
+    # -mad:
+    # -sd:
+    # -cz -ctp: true z-stat and t-stat
+    # -d: data file. no default.
+    # -tf: file containing actual significant regions. no default.
+    # -of: output file name. dedault: out.txt.
+
 
 ### Nucleosome calling and classification
 Bowtie2 mapping results in `BED` with a quality filter >=20, were first filtered to remove extra long reads over 260bp, and then trimmed fragments to 50 bp around nucleosome dyad. After read pre-processing, genome coverage was calculated in RPM for each digestive condition and each rep. Fast Fourier Transform (FFT) was applied to filter noise for coverage profile prior to peak detection of nucleosome positioning. Well and loosely positioned nucleosomes were characterized.

@@ -8,7 +8,9 @@ To investigate differential regulatory control of duplicated genes (*aka* homoeo
 
 **2016**: A modified protocol was estblished to extract high-quality nucleus from mature cotton tissues including leaf and petal, which proves to be the most critical step of chromatin accessibility assays. 
 
-**2017**: Library preparation and sequencing was finished for 14 out of 16 samples. Data analysis in ongoing.
+**2017**: Library preparation and sequencing was finished for 14 out of 16 samples. 
+
+**2018**: All sequencing datasets were completed. Data analysis in ongoing.
 
 
 - Materials and Methods: [methods.md](methods.md)
