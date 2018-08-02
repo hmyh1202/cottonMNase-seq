@@ -12,11 +12,15 @@ To investigate differential regulatory control of duplicated genes (*aka* homoeo
 
 **2018**: All sequencing datasets were completed. Data analysis in ongoing.
 
+## Data analysis:
 
-- Materials and Methods: [methods.md](methods.md)
-- Data analysis: [dataAnalysis.md](dataAnalysis.md)
-- Results: [results.md](results.md)
-- Discussions:
+- [Summary](dataAnalysis.md)
+- [Analysis of MNase-seq]
+- [Analysis of RNA-seq]
+- homoeolog/ortholog group
+- Prediction of nucleosome positioning
+- Bioinformatic prediction of cis elements and regions
+- Other datasets
 
 ## Scripts
 
@@ -25,3 +29,12 @@ To investigate differential regulatory control of duplicated genes (*aka* homoeo
 - Differential nuclease sensitivity profiling analysis: [dns.r](dns.r)
 - Nucleosome calling and classification: [nucleR.r](nucleR.r) & [nucleR.source.r](nucleR.source.r)
 - Assess the reproducibility of replicates: 
+
+
+## Manuscript preparation
+
+- Introduction: [introduction](introduction.md)
+- Materials and Methods: [methods.md](methods.md)
+- Results: [results.md](results.md)
+- Discussions:
+

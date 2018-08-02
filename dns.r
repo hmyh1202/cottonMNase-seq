@@ -64,14 +64,14 @@ bgs=bedtoolsGenomeCov(allbeds,chromsizes)
 ubgs=bgUnify(bgs,filler=0,discardUnshared=F)
 
 ## define light and heavy unified bedGraphs. Assumes light-digest files have an L_ in their names, and heavy-digest have H_
-l=files("*L_*unified.bg")
-h=files("*H_*unified.bg")
+l=files("*L*unified.bg")
+h=files("*H*unified.bg")
 
 ## check to see if light and heavy are paired properly
 data.frame(l,h)
 
 ## calculate difference between light and heavy
-dbgs=bgOps(l,"difference",h,pattern="L_",replacement="D_")
+dbgs=bgOps(l,"difference",h,pattern="L",replacement="D")
 
 
 ## convert bedGraph files to bigWig
